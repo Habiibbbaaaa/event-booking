@@ -1,14 +1,24 @@
+import 'package:booking/core/networking/api_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioFactory {
-  late Dio dio;
+  static late Dio _dio;
 
-  init() {
-    dio = Dio(BaseOptions(baseUrl: ''));
+  static Dio getDio() {
+    Duration duration = Duration(seconds: 30);
+    _dio = Dio(BaseOptions(
+      baseUrl: ApiConstants.baseUrl,
+      receiveTimeout: duration,
+      connectTimeout: duration,
+      sendTimeout: duration,
+      // headers:{
+      //   ''
+      // }
+    ));
 
-    dio.interceptors.add(PrettyDioLogger(
+    _dio.interceptors.add(PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
         responseHeader: false,
@@ -18,5 +28,6 @@ class DioFactory {
         maxWidth: 90,
         ///////////
         enabled: kDebugMode));
+    return _dio;
   }
 }
