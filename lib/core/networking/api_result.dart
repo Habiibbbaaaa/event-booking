@@ -10,6 +10,6 @@ class Success<T> extends ApiResult<T> {
 }
 
 class ApiError<T> extends ApiResult<T> {
-  final T error;
-  const ApiError(this.error);
+  final ApiErrorModel apiErrorModel; // ✅ تحديد كائن الإيرور بوضوح بدلاً من T
+  const ApiError(this.apiErrorModel);
 }

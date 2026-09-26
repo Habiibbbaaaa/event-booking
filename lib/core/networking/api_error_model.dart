@@ -28,3 +28,7 @@ class Errors {
     email = json['email'] == null ? null : List<String>.from(json['email']);
   }
 }
+
+// شكل ال error
+// الي بحطه في apierror 
+// الي موجود في api result 

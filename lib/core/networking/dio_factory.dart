@@ -1,24 +1,28 @@
 import 'package:booking/core/networking/api_constants.dart';
+import 'package:booking/core/networking/interceptor/auth_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioFactory {
-  static late Dio _dio;
+  DioFactory._();
+
+  static late Dio _dio; // Private على مستوى الكلاس
 
   static Dio getDio() {
-    Duration duration = Duration(seconds: 30);
-    _dio = Dio(BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      receiveTimeout: duration,
-      connectTimeout: duration,
-      sendTimeout: duration,
-      // headers:{
-      //   ''
-      // }
-    ));
+    const duration = Duration(seconds: 30);
 
-    _dio.interceptors.add(PrettyDioLogger(
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConstants.baseUrl,
+        receiveTimeout: duration,
+        connectTimeout: duration,
+        sendTimeout: duration,
+      ),
+    );
+
+    _dio.interceptors.add(
+      PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
         responseHeader: false,
@@ -26,8 +30,13 @@ class DioFactory {
         error: true,
         compact: true,
         maxWidth: 90,
-        ///////////
-        enabled: kDebugMode));
+        enabled: kDebugMode,
+      ),
+    );
+
+    // add interceptor to the requests
+    _dio.interceptors.add(AuthInterceptor());
+
     return _dio;
   }
 }

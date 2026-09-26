@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
-  final _registerRepo;
+  final RegisterRepo _registerRepo;
 
   RegisterCubit(this._registerRepo) : super(RegisterInitial());
 
@@ -19,7 +19,10 @@ class RegisterCubit extends Cubit<RegisterState> {
     if (result is Success) {
       emit(RegisterSuccess());
     } else if (result is ApiError) {
-      emit(RegisterError(result.error.toString()));
+      //emit(RegisterError(result.error.));
+      final errorModel = (result as ApiError).apiErrorModel;
+      emit(RegisterError(errorModel.message ?? 'An error occurred'));
+      ////////////////////////
     }
   }
 }
