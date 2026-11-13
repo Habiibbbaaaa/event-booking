@@ -15,6 +15,10 @@ class DioFactory {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
+        headers: {
+          'apikey': ApiConstants.publishableKey,
+          'Content-Type': 'application/json',
+        },
         receiveTimeout: duration,
         connectTimeout: duration,
         sendTimeout: duration,
@@ -36,7 +40,7 @@ class DioFactory {
 
     // add interceptor to the requests
     _dio.interceptors.add(AuthInterceptor());
-
+    print('CURRENT BASE URL: ${_dio.options.baseUrl}');
     return _dio;
   }
 }

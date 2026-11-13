@@ -14,13 +14,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _UsernameController = TextEditingController();
+  final _EmailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordObscured = true;
 
   @override
   void dispose() {
-    _UsernameController.dispose();
+    _EmailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -60,16 +60,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Username / Email Field
                 TextFormField(
-                  controller: _UsernameController,
+                  controller: _EmailController,
                   decoration: const InputDecoration(
-                    labelText: 'Username or Email',
-                    hintText: 'Enter your username or email',
+                    labelText: ' Email',
+                    hintText: 'Enter your  email',
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your username or email';
+                      return 'Please enter your  email';
                     }
                     return null;
                   },
@@ -120,7 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.green,
                         ),
                       );
-                      // TODO: Navigate to Home Screen
+                      //  Navigate to Home Screen
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.homescreen,
+                      );
                     } else if (state is LoginError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -147,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           final loginRequestModel = LoginRequestModel(
-                            username: _UsernameController.text.trim(),
+                            email: _EmailController.text.trim(),
                             password: _passwordController.text,
                           );
 

@@ -14,16 +14,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  final nameController = TextEditingController();
-  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   void dispose() {
-    nameController.dispose();
-    usernameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -76,34 +71,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter a username';
-                        }
-                        return null;
-                      },
-                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: emailController,
@@ -150,8 +117,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : () {
                                 if (_formKey.currentState!.validate()) {
                                   final registerModel = RegisterRequestModel(
-                                    name: nameController.text.trim(),
-                                    username: usernameController.text.trim(),
+                                    //name: nameController.text.trim(),
+                                    //username: usernameController.text.trim(),
                                     email: emailController.text.trim(),
                                     password: passwordController.text,
                                   );

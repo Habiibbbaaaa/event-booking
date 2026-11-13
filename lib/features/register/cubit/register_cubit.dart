@@ -20,7 +20,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(RegisterSuccess());
     } else if (result is ApiError) {
       //emit(RegisterError(result.error.));
-      final errorModel = (result as ApiError).apiErrorModel;
+      final errorModel = (result).apiErrorModel;
       emit(RegisterError(errorModel.message ?? 'An error occurred'));
       ////////////////////////
     }

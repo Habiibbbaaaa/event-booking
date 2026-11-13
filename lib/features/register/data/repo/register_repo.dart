@@ -18,7 +18,7 @@ class RegisterRepo {
         data: registerModel.toJson(),
       );
 
-      return Success(response.data['message']);
+      return Success(response.data);
     } on DioException catch (e) {
       return ApiError(ApiErrorHandler.handle(e));
     }

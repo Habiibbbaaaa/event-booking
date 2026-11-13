@@ -17,8 +17,13 @@ class LoginRepo {
         ApiConstants.login,
         data: loginModel.toJson(),
       );
-      return Success(response.data['token']);
+      return Success(response.data['access_token']);
     } on DioException catch (e) {
+      print('Dio error type: ${e.type}');
+      print('Dio error message: ${e.message}');
+      print('Dio error details: ${e.error}');
+      print('Response: ${e.response?.data}');
+
       return ApiError(ApiErrorHandler.handle(e));
     }
   }

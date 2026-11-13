@@ -7,9 +7,9 @@ class BookingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.loginscreen, // 👈 خليناها تبدأ بشاشة الـ Login
+      initialRoute: AppRoutes.loginscreen, //  خليناها تبدأ بشاشة الـ Login
       onGenerateRoute: AppRouter.onGenerateRoutes,
     );
   }

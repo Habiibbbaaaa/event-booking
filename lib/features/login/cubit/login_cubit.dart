@@ -21,14 +21,20 @@ class LoginCubit extends Cubit<LoginState> {
 // register fanction is the method in repo
 
     if (result is Success) {
-      emit(LoginSuccess());
+      final token = result.data;
+      print('toooooooken : $token');
+
       await getIt<LocalStorage>().setString(
         AppConstants.token,
         result.data,
       );
+      final savedToken =
+          await getIt<LocalStorage>().getString(AppConstants.token);
+      print('savedTOOOOKEN : $savedToken');
+      emit(LoginSuccess());
     } else if (result is ApiError) {
       //emit(RegisterError(result.error.));
-      final errorModel = (result as ApiError).apiErrorModel;
+      final errorModel = (result).apiErrorModel;
       emit(LoginError(errorModel.message ?? 'An error occurred'));
 ////////////////////////
     }
