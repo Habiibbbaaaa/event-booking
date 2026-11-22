@@ -3,6 +3,9 @@ import 'package:booking/features/event_details/cubit/event_details_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// عدّلي مسار الاستيراد ده حسب مكان ملف VenueItemCard في مشروعك
+import 'venue_item_card.dart';
+
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
 
@@ -13,6 +16,13 @@ class EventDetailsScreen extends StatefulWidget {
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   final _guestsController = TextEditingController();
   final _durationController = TextEditingController();
+
+  static const Map<String, int> _eventTypeToId = {
+    'Workshop': 1,
+    'Corporate Event': 2,
+    'Conference': 3,
+    'Networking Event': 4,
+  };
 
   String _selectedEventType = 'Workshop';
   String _selectedVenueType = 'indoor';
@@ -37,7 +47,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. اختيار نوع الـ Event (Workshop / Conference)
+              // 1. اختيار نوع الـ Event مطابق لجدول event_type
               DropdownButtonFormField<String>(
                 value: _selectedEventType,
                 decoration: const InputDecoration(
@@ -45,11 +55,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 items: const [
                   DropdownMenuItem(value: 'Workshop', child: Text('Workshop')),
                   DropdownMenuItem(
+                      value: 'Corporate Event', child: Text('Corporate Event')),
+                  DropdownMenuItem(
                       value: 'Conference', child: Text('Conference')),
-                  DropdownMenuItem(value: 'Meeting', child: Text('Meeting')),
+                  DropdownMenuItem(
+                      value: 'Networking Event',
+                      child: Text('Networking Event')),
                 ],
-                onChanged: (value) =>
-                    setState(() => _selectedEventType = value!),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _selectedEventType = value);
+                  }
+                },
               ),
               const SizedBox(height: 16),
 
@@ -72,12 +89,15 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   DropdownMenuItem(value: 'indoor', child: Text('Indoor')),
                   DropdownMenuItem(value: 'outdoor', child: Text('Outdoor')),
                 ],
-                onChanged: (value) =>
-                    setState(() => _selectedVenueType = value!),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _selectedVenueType = value);
+                  }
+                },
               ),
               const SizedBox(height: 16),
 
-              // 4. اختيار التاريخ (Date Picker)
+              // 4. اختيار التاريخ
               OutlinedButton.icon(
                 icon: const Icon(Icons.calendar_today),
                 label: Text(_selectedDate == null
@@ -90,13 +110,14 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     firstDate: DateTime.now(),
                     lastDate: DateTime.now().add(const Duration(days: 365)),
                   );
-                  if (pickedDate != null)
+                  if (pickedDate != null) {
                     setState(() => _selectedDate = pickedDate);
+                  }
                 },
               ),
               const SizedBox(height: 16),
 
-              // 5. اختيار وقت البداية (Time Picker)
+              // 5. اختيار وقت البداية
               OutlinedButton.icon(
                 icon: const Icon(Icons.access_time),
                 label: Text(_startTime == null
@@ -107,8 +128,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     context: context,
                     initialTime: TimeOfDay.now(),
                   );
-                  if (pickedTime != null)
+                  if (pickedTime != null) {
                     setState(() => _startTime = pickedTime);
+                  }
                 },
               ),
               const SizedBox(height: 16),
@@ -124,10 +146,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               ),
               const SizedBox(height: 24),
 
-              // 7. زرار البحث مع الـ BlocConsumer
+              // 7. زرار البحث مع متابعة حالات البحث والحجز
               BlocConsumer<EventDetailsCubit, EventDetailsState>(
                 listener: (context, state) {
                   if (state is EventDetailsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red),
+                    );
+                  } else if (state is BookingSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Venue booked successfully!'),
+                          backgroundColor: Colors.green),
+                    );
+                  } else if (state is BookingError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content: Text(state.message),
@@ -149,16 +183,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       final duration =
                           int.tryParse(_durationController.text.trim()) ?? 0;
 
-                      // 1. نتأكد إن كل الحقول متشطبة مش فاضية (خصوصاً التاريخ ووقت البداية)
                       if (guests > 0 &&
                           duration > 0 &&
                           _selectedDate != null &&
                           _startTime != null) {
-                        // تنسيق الوقت كنص
                         final formattedTime =
                             '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}';
 
-                        // 2. هنا الـ _selectedDate متأكدين مليون في المية إنه مش null، فمفيش خطر من استخدام علامة التعجب !
                         context.read<EventDetailsCubit>().getAvailableVenues(
                               eventType: _selectedEventType,
                               guests: guests,
@@ -168,7 +199,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               duration: duration,
                             );
                       } else {
-                        // 3. لو نسي حاجة، بنطلعله رسالة تنبيه واضحة ومناسبة
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
@@ -185,30 +215,64 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               ),
               const SizedBox(height: 24),
 
-              // 8. عرض النتيجة
+              // 8. عرض القاعات المتاحة مع زرار الحجز
               SizedBox(
                 height: 250,
                 child: BlocBuilder<EventDetailsCubit, EventDetailsState>(
                   builder: (context, state) {
                     if (state is EventDetailsSuccess) {
                       final venues = state.venues;
-                      if (venues.isEmpty)
+                      if (venues.isEmpty) {
                         return const Center(
                             child: Text(
                                 'No venues available for these criteria.'));
+                      }
 
                       return ListView.builder(
                         itemCount: venues.length,
                         itemBuilder: (context, index) {
                           final venue = venues[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(venue.name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              subtitle: Text(
-                                  'Capacity: ${venue.capacity} | \$${venue.pricePerHour}/hr'),
-                            ),
+
+                          return VenueItemCard(
+                            venue: venue,
+                            isBooking: state is BookingLoading,
+                            onBook: () {
+                              final guests =
+                                  int.tryParse(_guestsController.text.trim()) ??
+                                      0;
+                              final duration = int.tryParse(
+                                      _durationController.text.trim()) ??
+                                  0;
+
+                              if (guests <= 0 ||
+                                  duration <= 0 ||
+                                  _selectedDate == null ||
+                                  _startTime == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Please select date, start time, and fill all fields first!'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              final formattedTime =
+                                  '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}:00';
+
+                              context.read<EventDetailsCubit>().bookVenue(
+                                    venueId: venue.id,
+                                    eventTypeId:
+                                        _eventTypeToId[_selectedEventType]!,
+                                    date: _selectedDate!,
+                                    startTime: formattedTime,
+                                    duration: duration,
+                                    guests: guests,
+                                    eventType: _selectedEventType,
+                                    pricePerHour: venue.pricePerHour.toDouble(),
+                                  );
+                            },
                           );
                         },
                       );

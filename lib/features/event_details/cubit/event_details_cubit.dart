@@ -1,8 +1,8 @@
+import 'package:booking/core/networking/api_result.dart';
 import 'package:booking/features/event_details/cubit/event_details_state.dart';
 import 'package:booking/features/event_details/cubit/venue_model.dart';
 import 'package:booking/features/event_details/data/event_details_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:booking/core/networking/api_result.dart';
 
 class EventDetailsCubit extends Cubit<EventDetailsState> {
   final EventDetailsRepo _eventDetailsRepo;
@@ -34,6 +34,37 @@ class EventDetailsCubit extends Cubit<EventDetailsState> {
     } else if (result is ApiError) {
       final errorModel = (result as ApiError).apiErrorModel;
       emit(EventDetailsError(errorModel.message ?? 'An error occurred'));
+    }
+  }
+
+  Future<void> bookVenue({
+    required int venueId,
+    required int eventTypeId,
+    required DateTime date,
+    required String startTime,
+    required int duration,
+    required int guests,
+    required String eventType,
+    required double pricePerHour,
+  }) async {
+    emit(BookingLoading());
+
+    final result = await _eventDetailsRepo.bookVenue(
+      venueId: venueId,
+      eventTypeId: eventTypeId,
+      date: date,
+      startTime: startTime,
+      duration: duration,
+      guests: guests,
+      eventType: eventType,
+      pricePerHour: pricePerHour,
+    );
+
+    if (result is Success) {
+      emit(BookingSuccess());
+    } else if (result is ApiError) {
+      final errorModel = (result).apiErrorModel;
+      emit(BookingError(errorModel.message ?? 'Failed to book venue'));
     }
   }
 }

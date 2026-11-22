@@ -15,3 +15,13 @@ class EventDetailsError extends EventDetailsState {
   final String message;
   EventDetailsError(this.message);
 }
+
+// حالات خاصة بعملية الحجز
+class BookingLoading extends EventDetailsState {}
+
+class BookingSuccess extends EventDetailsState {}
+
+class BookingError extends EventDetailsState {
+  final String message;
+  BookingError(this.message);
+}
